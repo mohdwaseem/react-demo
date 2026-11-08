@@ -1,0 +1,30 @@
+# =====================================================================================
+#  Multi-stage build for the .NET API.
+#  Stage 1 (sdk image, ~900 MB) compiles; stage 2 (aspnet runtime image, ~230 MB) runs.
+#  Only the published output is copied into the final image.
+#  Build context = repository root:  docker build -f deploy/docker/Dockerfile.api .
+# =====================================================================================
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# 1) Copy only the project files first and restore → this layer is cached until a .csproj changes.
+COPY backend/src/EmployeeDemo.Api/EmployeeDemo.Api.csproj backend/src/EmployeeDemo.Api/
+RUN dotnet restore backend/src/EmployeeDemo.Api/EmployeeDemo.Api.csproj -r linux-x64
+
+# 2) Copy the source and publish.
+COPY backend/ backend/
+RUN dotnet publish backend/src/EmployeeDemo.Api/EmployeeDemo.Api.csproj \
+      -c Release -r linux-x64 --self-contained false --no-restore -o /app \
+ && rm -f /app/appsettings.Development.json
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+COPY --from=build /app .
+
+ENV ASPNETCORE_URLS=http://+:8080 \
+    ASPNETCORE_ENVIRONMENT=Production
+EXPOSE 8080
+
+# Run as the non-root user that the official .NET images provide.
+USER $APP_UID
+ENTRYPOINT ["dotnet", "EmployeeDemo.Api.dll"]

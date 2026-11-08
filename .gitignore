@@ -1,0 +1,25 @@
+# ---- build output ----
+artifacts/
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# ---- Node / Next.js (see also frontend/.gitignore) ----
+node_modules/
+.next/
+
+# ---- docs site ----
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# ---- secrets / local overrides ----
+.env
+.env*.local
+appsettings.*.local.json
+
+# ---- OS / editors ----
+.DS_Store
+Thumbs.db
+.idea/

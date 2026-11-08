@@ -1,0 +1,12 @@
+{
+  // VS Code shows "Install recommended extensions" when you open this folder.
+  "recommendations": [
+    "ms-dotnettools.csdevkit",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "humao.rest-client",
+    "vue.volar",
+    "ms-mssql.mssql"
+  ]
+}

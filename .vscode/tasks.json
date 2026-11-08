@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-api",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["build", "${workspaceFolder}/backend/src/EmployeeDemo.Api/EmployeeDemo.Api.csproj"],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "package-all",
+      "type": "shell",
+      "command": "pwsh -File ${workspaceFolder}/scripts/package-all.ps1",
+      "problemMatcher": []
+    },
+    {
+      "label": "docs",
+      "type": "shell",
+      "command": "npm run docs:dev",
+      "options": { "cwd": "${workspaceFolder}/docs" },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

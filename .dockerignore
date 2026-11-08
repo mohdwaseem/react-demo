@@ -1,0 +1,10 @@
+# Keep the Docker build context small and avoid copying Windows-built binaries into Linux images.
+**/node_modules
+**/.next
+**/bin
+**/obj
+**/.vs
+**/.env*.local
+artifacts
+docs
+.git

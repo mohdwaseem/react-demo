@@ -1,0 +1,47 @@
+### Try the API from VS / VS Code / Rider (REST Client). Start the API first: dotnet run
+@api = http://localhost:5080
+
+### Health
+GET {{api}}/api/health
+
+### List employees (search + filter + sort + paging)
+GET {{api}}/api/employees?search=a&sortBy=salary&sortDir=desc&page=1&pageSize=5
+
+### One employee
+GET {{api}}/api/employees/1
+
+### Departments
+GET {{api}}/api/departments
+
+### Login → copy "token" into @token below
+POST {{api}}/api/auth/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "Admin@123" }
+
+###
+@token = paste-token-here
+
+### Create employee (needs token)
+POST {{api}}/api/employees
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@demo.local",
+  "phone": "+1-555-111-2222",
+  "hireDate": "2025-01-15",
+  "salary": 75000,
+  "isActive": true,
+  "employmentType": "FullTime",
+  "departmentId": 1
+}
+
+### Validation error example (400)
+POST {{api}}/api/employees
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "firstName": "", "email": "not-an-email", "departmentId": 0 }

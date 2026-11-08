@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  `dotnet publish` already generates a web.config for the API (in artifacts/api).
+  This example shows the same file with the environment variables a real server needs.
+  Prefer setting secrets as IIS Configuration Editor / app pool environment variables or a vault
+  rather than committing them in this file.
+  GUIDE: docs/guide/16b-deploy-to-iis-and-docker.md
+-->
+<configuration>
+  <location path="." inheritInChildApplications="false">
+    <system.webServer>
+      <handlers>
+        <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" />
+      </handlers>
+      <aspNetCore processPath="dotnet"
+                  arguments=".\EmployeeDemo.Api.dll"
+                  stdoutLogEnabled="false"
+                  stdoutLogFile=".\logs\stdout"
+                  hostingModel="inprocess">
+        <environmentVariables>
+          <environmentVariable name="ASPNETCORE_ENVIRONMENT" value="Production" />
+          <environmentVariable name="ConnectionStrings__DefaultConnection"
+                               value="Server=SQLPROD01;Database=EmployeeDemoDb;Trusted_Connection=True;TrustServerCertificate=True" />
+          <environmentVariable name="Jwt__Key" value="REPLACE-with-a-long-random-secret-of-32+-chars" />
+          <environmentVariable name="Cors__AllowedOrigins__0" value="https://employees.mycompany.com" />
+        </environmentVariables>
+      </aspNetCore>
+    </system.webServer>
+  </location>
+</configuration>

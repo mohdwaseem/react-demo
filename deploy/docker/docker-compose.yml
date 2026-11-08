@@ -1,0 +1,67 @@
+# =====================================================================================
+#  Run the whole stack in containers: SQL Server + .NET API + Next.js
+#
+#    cd deploy/docker
+#    docker compose up --build          → http://localhost:3000  (API: http://localhost:5080)
+#    docker compose down -v             → stop and delete the database volume
+#
+#  GUIDE: docs/guide/16b-deploy-to-iis-and-docker.md
+# =====================================================================================
+name: employee-demo
+
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Demo_Passw0rd!"   # demo only, use secrets in real deployments
+      MSSQL_PID: Developer
+    ports:
+      - "14333:1433"   # 14333 on your machine so it doesn't clash with a local SQL Server
+    volumes:
+      - sql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.api
+    environment:
+      # "__" (double underscore) = ":" in configuration keys → ConnectionStrings:DefaultConnection
+      ConnectionStrings__DefaultConnection: "Server=sql,1433;Database=EmployeeDemoDb;User Id=sa;Password=Demo_Passw0rd!;TrustServerCertificate=True"
+      Jwt__Key: "docker-demo-key-change-me-at-least-32-characters"
+      Cors__AllowedOrigins__0: "http://localhost:3000"
+      DemoUsers__0__Username: "admin"
+      DemoUsers__0__Password: "Admin@123"
+      DemoUsers__0__Role: "Admin"
+      # Demo convenience: create the schema + sample data on startup.
+      Database__MigrateOnStartup: "true"
+      Database__SeedDemoData: "true"
+    ports:
+      - "5080:8080"
+    depends_on:
+      sql:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.web
+      args:
+        # The BROWSER calls the API through the port published on your machine...
+        NEXT_PUBLIC_API_BASE_URL: "http://localhost:5080"
+    environment:
+      # ...while the Next.js SERVER calls it over the internal Docker network.
+      API_BASE_URL: "http://api:8080"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  sql-data:

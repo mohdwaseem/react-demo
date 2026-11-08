@@ -1,0 +1,84 @@
+/* Brand colours + reading comfort tweaks on top of the default VitePress theme. */
+:root {
+  --vp-c-brand-1: #4f46e5; /* indigo-600, same as the demo app */
+  --vp-c-brand-2: #6366f1;
+  --vp-c-brand-3: #818cf8;
+  --vp-c-brand-soft: rgba(99, 102, 241, 0.14);
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #512bd4 10%, #61dafb 90%); /* .NET purple → React blue */
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #512bd4 50%, #61dafb 50%);
+  --vp-home-hero-image-filter: blur(56px);
+
+  --dotnet: #512bd4;
+  --react: #0ea5e9;
+}
+
+.dark {
+  --vp-c-brand-1: #a5b4fc;
+  --vp-c-brand-2: #818cf8;
+  --vp-c-brand-3: #6366f1;
+  --react: #61dafb;
+  --dotnet: #a78bfa;
+}
+
+/* A slightly larger body font and comfortable line length */
+.vp-doc {
+  font-size: 16.5px;
+  line-height: 1.75;
+}
+.vp-doc p,
+.vp-doc li {
+  max-width: 78ch;
+}
+
+/* Headings with breathing room */
+.vp-doc h2 {
+  margin-top: 56px;
+  padding-top: 24px;
+}
+
+/* Tables: zebra rows + no wrapping in the first column */
+.vp-doc table tr:nth-child(2n) {
+  background-color: var(--vp-c-bg-soft);
+}
+.vp-doc table td:first-child {
+  white-space: nowrap;
+}
+
+/* Convention in this guide: "::: info" boxes are "Coming from .NET" comparisons → .NET purple */
+.vp-doc .custom-block.info {
+  border-left: 4px solid var(--dotnet);
+  background-color: color-mix(in srgb, var(--dotnet) 8%, var(--vp-c-bg-soft));
+}
+.vp-doc .custom-block.info .custom-block-title {
+  color: var(--dotnet);
+}
+
+/* Screenshots */
+.vp-doc img.screenshot {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.12);
+  margin: 16px 0 8px;
+}
+.vp-doc .caption {
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+  text-align: center;
+  margin-top: 0;
+}
+
+/* "What you'll learn" box at the top of each chapter */
+.vp-doc .learn {
+  border: 1px solid var(--vp-c-brand-soft);
+  background: var(--vp-c-brand-soft);
+  border-radius: 12px;
+  padding: 4px 20px 8px;
+  margin: 16px 0 28px;
+}
+.vp-doc .learn .meta {
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+  margin-bottom: 0;
+}

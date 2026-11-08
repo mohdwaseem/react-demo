@@ -1,0 +1,38 @@
+# =====================================================================================
+#  Multi-stage build for the Next.js app (output: "standalone").
+#  Build context = repository root:  docker build -f deploy/docker/Dockerfile.web .
+# =====================================================================================
+
+# ---- 1. install dependencies (cached until package*.json changes) ----
+FROM node:24-alpine AS deps
+WORKDIR /app
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+# ---- 2. build ----
+FROM node:24-alpine AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY frontend/ .
+# NEXT_PUBLIC_* values are baked into the browser JavaScript NOW, at build time.
+ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:5080
+ARG APP_VERSION=docker
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
+    APP_VERSION=$APP_VERSION \
+    NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
+
+# ---- 3. run: only the standalone server + static files (~150 MB image) ----
+FROM node:24-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0 \
+    NEXT_TELEMETRY_DISABLED=1
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+USER node
+EXPOSE 3000
+# API_BASE_URL (server-side calls) is read at RUNTIME: set it in docker-compose.yml.
+CMD ["node", "server.js"]

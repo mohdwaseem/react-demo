@@ -1,0 +1,45 @@
+{
+  // Press F5 and pick "Full stack" to debug the .NET API and Next.js together.
+  // GUIDE: docs/guide/15-debugging.md
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}/backend/src/EmployeeDemo.Api/bin/Debug/net10.0/EmployeeDemo.Api.dll",
+      "cwd": "${workspaceFolder}/backend/src/EmployeeDemo.Api",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5080"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Now listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s/scalar"
+      }
+    },
+    {
+      "name": "Next.js: server-side",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/frontend"
+    },
+    {
+      "name": "Next.js: browser (Edge)",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full stack (API + Next.js + browser)",
+      "configurations": [".NET API", "Next.js: server-side", "Next.js: browser (Edge)"],
+      "stopAll": true
+    }
+  ]
+}
