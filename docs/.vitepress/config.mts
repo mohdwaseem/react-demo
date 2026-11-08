@@ -118,7 +118,13 @@ export default withMermaid(
 
     mermaid: { theme: "default" },
 
-    // Mermaid is a big library; the size warning is expected for a docs site.
-    vite: { build: { chunkSizeWarningLimit: 4000 } },
+    vite: {
+      // Mermaid depends on fastdom, a CommonJS-only package that the mermaid plugin
+      // does not pre-bundle. Without this the browser fails with
+      // "fastdom.js does not provide an export named 'default'".
+      optimizeDeps: { include: ["fastdom", "fastdom/extensions/fastdom-promised.js"] },
+      // Mermaid is a big library; the size warning is expected for a docs site.
+      build: { chunkSizeWarningLimit: 4000 },
+    },
   }),
 );
