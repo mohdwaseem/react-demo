@@ -314,6 +314,7 @@ jobs:
         with: { node-version: "24", cache: npm, cache-dependency-path: frontend/package-lock.json }
       - run: ./scripts/package-all.ps1 -Runtime linux-x64 -ApiBaseUrl "${{ vars.API_BASE_URL || 'http://localhost:5080' }}"
         shell: pwsh
+      # + coverage report & badge steps (see "Status badges" below)
       - uses: actions/upload-artifact@v4
         with:
           name: employee-demo-${{ github.sha }}
@@ -334,6 +335,24 @@ jobs:
 ::: tip Same script locally and in CI
 Keeping the logic in `scripts/*.ps1` (not in YAML) means you can reproduce any CI failure on your machine with one command.
 :::
+
+### Status badges (build + coverage)
+
+The README shows two badges:
+
+| Badge | Where it comes from |
+| --- | --- |
+| **build passing / failing** | Built into GitHub: `https://github.com/<owner>/<repo>/actions/workflows/build.yml/badge.svg?branch=main` |
+| **coverage %** | `build-backend.ps1` runs `dotnet test --collect "XPlat Code Coverage"` (coverlet, like Visual Studio's code coverage) → `artifacts/coverage/`. CI turns that into a report + SVG badge with **ReportGenerator**, then force-pushes `coverage.svg` to a separate `badges` branch. |
+
+Each CI run also shows a coverage table on its summary page, and the full HTML report can be downloaded from its artifacts. To see the same report locally:
+
+```powershell
+./scripts/build-backend.ps1
+dotnet tool install --global dotnet-reportgenerator-globaltool   # once
+reportgenerator -reports:"artifacts/coverage/**/coverage.cobertura.xml" -targetdir:artifacts/coverage-report -filefilters:"-**/Migrations/**"
+start artifacts/coverage-report/index.html
+```
 
 ## Recap
 

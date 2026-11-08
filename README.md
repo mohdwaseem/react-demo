@@ -1,5 +1,8 @@
 # React for .NET Developers: Employee CRUD Demo
 
+[![build](https://github.com/mohdwaseem/react-demo/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/mohdwaseem/react-demo/actions/workflows/build.yml?query=branch%3Amain)
+[![API test coverage](https://raw.githubusercontent.com/mohdwaseem/react-demo/badges/coverage.svg)](https://github.com/mohdwaseem/react-demo/actions/workflows/build.yml?query=branch%3Amain)
+
 A complete, working reference app for developers who know **SQL Server, ASP.NET Core and MVC** and want to learn **React / Next.js**, with a step-by-step developer guide.
 
 | Layer | Tech |

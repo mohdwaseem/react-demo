@@ -7,6 +7,7 @@
     artifacts/api/                 → copy to the server (IIS site folder / container)
     artifacts/db/migrate.sql       → idempotent SQL script for the DBA (safe to run more than once)
     artifacts/db/efbundle(.exe)    → self-contained migration runner: efbundle --connection "..."
+    artifacts/coverage/            → test code coverage (Cobertura XML), unless -SkipTests
 
   GUIDE: docs/guide/16-build-and-package.md
 
@@ -47,6 +48,7 @@ $backend = Join-Path $RepoRoot 'backend'
 $project = Join-Path $backend 'src/EmployeeDemo.Api/EmployeeDemo.Api.csproj'
 $apiOut = Join-Path $OutputRoot 'api'
 $dbOut = Join-Path $OutputRoot 'db'
+$coverageOut = Join-Path $OutputRoot 'coverage'
 
 Push-Location $backend
 try {
@@ -57,7 +59,12 @@ try {
     }
 
     if (-not $SkipTests) {
-        Invoke-Native 'Run tests' { dotnet test -c $Configuration --no-build }
+        # "XPlat Code Coverage" = coverlet.collector (referenced by the test project).
+        # Each run writes <guid>/coverage.cobertura.xml; CI turns it into the README badge.
+        Reset-Directory $coverageOut
+        Invoke-Native 'Run tests (with code coverage)' {
+            dotnet test -c $Configuration --no-build --collect 'XPlat Code Coverage' --results-directory $coverageOut
+        }
     }
 
     Reset-Directory $apiOut
